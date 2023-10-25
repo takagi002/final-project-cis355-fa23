@@ -6,7 +6,7 @@ using UserApi.Models;
 using UserApi.Services;
 
 [ApiController]
-[Authorize]
+[Authorize(Role = RoleNames.Admin)] // only auth admin users 
 [Route("[controller]")]
 public class UsersController : ControllerBase
 {
