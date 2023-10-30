@@ -1,0 +1,40 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "backend", "backend", "{A5647AEB-02A8-483C-872B-7D8E95E6470F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{EBB6614F-F6D1-4C87-B27A-B6186132E5F3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserApi", "backend\src\UserApi\UserApi.csproj", "{F18161A8-C937-49F1-9FA0-6C08E2CDC722}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{BE185B3B-626D-4D77-AA51-E7BAE6758B8E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserApiTests", "backend\tests\UserApiTests\UserApiTests.csproj", "{1C017E98-8ADE-44CD-ABAE-DC1F9D65B0D9}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F18161A8-C937-49F1-9FA0-6C08E2CDC722}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F18161A8-C937-49F1-9FA0-6C08E2CDC722}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F18161A8-C937-49F1-9FA0-6C08E2CDC722}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F18161A8-C937-49F1-9FA0-6C08E2CDC722}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1C017E98-8ADE-44CD-ABAE-DC1F9D65B0D9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1C017E98-8ADE-44CD-ABAE-DC1F9D65B0D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1C017E98-8ADE-44CD-ABAE-DC1F9D65B0D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1C017E98-8ADE-44CD-ABAE-DC1F9D65B0D9}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{EBB6614F-F6D1-4C87-B27A-B6186132E5F3} = {A5647AEB-02A8-483C-872B-7D8E95E6470F}
+		{F18161A8-C937-49F1-9FA0-6C08E2CDC722} = {EBB6614F-F6D1-4C87-B27A-B6186132E5F3}
+		{BE185B3B-626D-4D77-AA51-E7BAE6758B8E} = {A5647AEB-02A8-483C-872B-7D8E95E6470F}
+		{1C017E98-8ADE-44CD-ABAE-DC1F9D65B0D9} = {BE185B3B-626D-4D77-AA51-E7BAE6758B8E}
+	EndGlobalSection
+EndGlobal

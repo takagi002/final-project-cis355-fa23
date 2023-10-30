@@ -7,7 +7,7 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/Lab2.sln",
+                "${workspaceFolder}/lab2-cis355-fa23.sln",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary;ForceNoAlign"
             ],
@@ -19,7 +19,7 @@
             "type": "process",
             "args": [
                 "publish",
-                "${workspaceFolder}/Lab2.sln",
+                "${workspaceFolder}/lab2-cis355-fa23.sln",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary;ForceNoAlign"
             ],
@@ -33,7 +33,7 @@
                 "watch",
                 "run",
                 "--project",
-                "${workspaceFolder}/Lab2.sln"
+                "${workspaceFolder}/lab2-cis355-fa23.sln"
             ],
             "problemMatcher": "$msCompile"
         }
