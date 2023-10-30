@@ -1,29 +1,56 @@
+using Microsoft.OpenApi.Models;
 using UserApi.Authorization;
-using UserApi.Helpers;
-using UserApi.Services;
+using UserApi.Extensions;
+using UserApi.Mappings;
 
+
+/// <summary>
+/// Entry point for the User API application.
+/// </summary>
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
+// Add services to the container
+builder.Services.AddRouting(options => options.LowercaseUrls = true);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+// Add swagger gen with bearer token authentication
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new() { Title = "User API", Version = "v1" });
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Description = "JWT Authorization header using the Bearer scheme.",
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer",
+        BearerFormat = "JWT"
+    });
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            Array.Empty<string>()
+        }
+    });
+});
+builder.Services.AddApplicationServices();
+builder.Services.AddAutoMapper(typeof(MappingProfile));
+builder.ConfigureDatabase();
+builder.ConfigureJwt();
 
-    
-builder.Services.AddScoped<IJwtUtils, JwtUtils>();
-builder.Services.AddScoped<IUserService, UserService>();
-
-builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
+// Configure logging
+builder.Logging
+    .ClearProviders()
+    .AddConsole()
+    .AddDebug();
 
 var app = builder.Build();
-
-// Ensure the database exists and apply any pending migrations.
-// using (var scope = app.Services.CreateScope())
-// {
-//     var dbContext = scope.ServiceProvider.GetRequiredService<UserIdentityDbContext>();
-//     dbContext.Database.Migrate();
-// }
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -33,9 +60,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseMiddleware<JwtMiddleware>();
-
+app.UseMiddleware<ErrorHandlerMiddleware>();
 app.UseAuthorization();
-
 app.MapControllers();
-
 app.Run();

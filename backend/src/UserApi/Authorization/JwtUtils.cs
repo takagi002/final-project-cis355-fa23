@@ -11,7 +11,7 @@ using UserApi.Helpers;
 public interface IJwtUtils
 {
     public string GenerateJwtToken(User user);
-    public int? ValidateJwtToken(string? token);
+    public int? ValidateJwtToken(string token);
 }
 
 public class JwtUtils : IJwtUtils
@@ -31,11 +31,18 @@ public class JwtUtils : IJwtUtils
         // generate token that is valid for 7 days
         var tokenHandler = new JwtSecurityTokenHandler();
         var key = Encoding.ASCII.GetBytes(_appSettings.Secret!);
-        var claims = new List<Claim>
+        var claims = new List<Claim>();
+
+        if (user != null)
         {
-            new Claim("id", user.Id.ToString()),
-            new Claim("Role", user.Role)
-        };
+            claims.Add(new Claim("Id", user.Id.ToString()));
+        }
+
+        if (user != null && user.Role != null)
+        {
+            claims.Add(new Claim("Role", user.Role));
+        }
+        
         var tokenDescriptor = new SecurityTokenDescriptor
         {
             Subject = new ClaimsIdentity(claims),
@@ -46,7 +53,7 @@ public class JwtUtils : IJwtUtils
         return tokenHandler.WriteToken(token);
     }
 
-    public int? ValidateJwtToken(string? token)
+    public int? ValidateJwtToken(string token)
     {
         if (token == null)
             return null;

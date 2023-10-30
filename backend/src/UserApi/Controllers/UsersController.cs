@@ -1,12 +1,12 @@
-namespace UserApi.Controllers;
-
 using Microsoft.AspNetCore.Mvc;
 using UserApi.Authorization;
 using UserApi.Models;
 using UserApi.Services;
 
+namespace UserApi.Controllers;
+
 [ApiController]
-[Authorize(Role = RoleNames.Admin)] // only auth admin users 
+[Authorize(Role = RoleNames.Admin)]
 [Route("[controller]")]
 public class UsersController : ControllerBase
 {
@@ -17,22 +17,19 @@ public class UsersController : ControllerBase
         _userService = userService;
     }
 
-    [AllowAnonymous]
-    [HttpPost("authenticate")]
-    public IActionResult Authenticate(AuthenticateRequest model)
-    {
-        var response = _userService.Authenticate(model);
-
-        if (response == null)
-            return BadRequest(new { message = "Username or password is incorrect" });
-
-        return Ok(response);
-    }
-
     [HttpGet]
     public IActionResult GetAll()
     {
-        var users = _userService.GetAll();
+        var users = _userService.GetAllAsync();
         return Ok(users);
+    }
+
+
+    [AllowAnonymous]
+    [HttpPost]
+    public async Task<IActionResult> CreateUser(CreateUserRequest newUser)
+    {
+        var createdUser = await _userService.CreateUserAsync(newUser);
+        return Ok(createdUser);
     }
 }

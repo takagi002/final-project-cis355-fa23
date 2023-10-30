@@ -41,6 +41,7 @@ services:
       PGADMIN_DEFAULT_PASSWORD: admin
     ports:
       - "5050:80"
+    network_mode: service:db
     depends_on:
       - db
 

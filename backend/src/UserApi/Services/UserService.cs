@@ -1,51 +1,75 @@
-namespace UserApi.Services;
-
+using AutoMapper;
 using UserApi.Authorization;
 using UserApi.Entities;
+using UserApi.Helpers;
 using UserApi.Models;
+using UserApi.Repositories;
 
-public interface IUserService
-{
-    AuthenticateResponse? Authenticate(AuthenticateRequest model);
-    IEnumerable<User> GetAll();
-    User? GetById(int id);
-}
+namespace UserApi.Services;
 
 public class UserService : IUserService
 {
-    // users hardcoded for simplicity, store in a db with hashed passwords in production applications
-    private List<User> _users = new List<User>
-    {
-        new User { Id = 1, FirstName = "Test", LastName = "User", Username = "test", Password = "test", Role = "Admin" }
-    };
-
+    private readonly IUserRepository _userRepository;
     private readonly IJwtUtils _jwtUtils;
+    private readonly IMapper _mapper;
+    private readonly IPasswordHasher _passwordHasher;
 
-    public UserService(IJwtUtils jwtUtils)
+
+    public UserService(IUserRepository userRepository, IJwtUtils jwtUtils, IMapper mapper, IPasswordHasher passwordHasher)
     {
+        _userRepository = userRepository;
         _jwtUtils = jwtUtils;
+        _mapper = mapper;
+        _passwordHasher = passwordHasher;
     }
 
-    public AuthenticateResponse? Authenticate(AuthenticateRequest model)
+    public async Task<AuthenticateResponse?> Authenticate(AuthenticateRequest model)
     {
-        var user = _users.SingleOrDefault(x => x.Username == model.Username && x.Password == model.Password);
+        // get user from database
+        var user = await _userRepository.GetUserByUsernameAsync(model.Username);
 
         // return null if user not found
         if (user == null) return null;
 
+        // check if the provided password matches the password in the database and return null if it doesn't
+        if (!_passwordHasher.ValidatePassword(model.Password, user.PasswordHash, user.PasswordSalt)) return null;
+
         // authentication successful so generate jwt token
         var token = _jwtUtils.GenerateJwtToken(user);
 
-        return new AuthenticateResponse(user, token);
+        
+        // map user and token to response model with Automapper and return
+        return _mapper.Map<AuthenticateResponse>(user, opts => opts.Items["Token"] = token);
     }
 
-    public IEnumerable<User> GetAll()
+    public async Task<CreateUserResponse?> CreateUserAsync(CreateUserRequest userRequest)
     {
-        return _users;
+        // Hash and salt the password
+        (byte[] passwordHash, byte[] passwordSalt) = _passwordHasher.HashPassword(userRequest.Password);
+
+        // Map CreateUserRequest model to User entity with Automapper
+        var userEntity = _mapper.Map<User>(userRequest);
+
+        // Assign hashed and salted password to user entity
+        userEntity.PasswordHash = passwordHash;
+        userEntity.PasswordSalt = passwordSalt;
+
+        // Create user in database
+        var createdUser = await _userRepository.CreateUserAsync(userEntity)
+            ?? throw new Exception("An error occurred when creating user. Try again later.");
+
+        // Map User entity to CreateUserResponse model with Automapper
+        var userResponse = _mapper.Map<CreateUserResponse>(createdUser);
+        return userResponse;
     }
 
-    public User? GetById(int id)
+    public async Task<IEnumerable<User>> GetAllAsync()
     {
-        return _users.FirstOrDefault(x => x.Id == id);
+        return await _userRepository.GetAllUsersAsync();
+    }
+
+    public async Task<User?> GetByIdAsync(int id)
+    {
+        return await _userRepository.GetUserByIdAsync(id);
     }
 }
