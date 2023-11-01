@@ -7,6 +7,6 @@ public interface IUserService
 {
     Task<AuthenticateResponse?> Authenticate(AuthenticateRequest model);
     Task<IEnumerable<User>> GetAllAsync();
-    Task<User?> GetByIdAsync(int id);
+    Task<User?> GetByIdAsync(string id);
     Task<CreateUserResponse?> CreateUserAsync(CreateUserRequest user);
 }

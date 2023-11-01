@@ -11,7 +11,7 @@ using UserApi.Helpers;
 public interface IJwtUtils
 {
     public string GenerateJwtToken(User user);
-    public int? ValidateJwtToken(string token);
+    public string? ValidateJwtToken(string token);
 }
 
 public class JwtUtils : IJwtUtils
@@ -53,7 +53,7 @@ public class JwtUtils : IJwtUtils
         return tokenHandler.WriteToken(token);
     }
 
-    public int? ValidateJwtToken(string token)
+    public string? ValidateJwtToken(string token)
     {
         if (token == null)
             return null;
@@ -64,7 +64,7 @@ public class JwtUtils : IJwtUtils
         {
             tokenHandler.ValidateToken(token, new TokenValidationParameters
             {
-                ValidateIssuerSigningKey = true,
+                ValidateIssuerSigningKey = false,
                 IssuerSigningKey = new SymmetricSecurityKey(key),
                 ValidateIssuer = false,
                 ValidateAudience = false,
@@ -73,7 +73,7 @@ public class JwtUtils : IJwtUtils
             }, out SecurityToken validatedToken);
 
             var jwtToken = (JwtSecurityToken)validatedToken;
-            var userId = int.Parse(jwtToken.Claims.First(x => x.Type == "id").Value);
+            var userId = jwtToken.Claims.First(x => x.Type == "Id").Value;
 
             // return user id from JWT token if validation successful
             return userId;

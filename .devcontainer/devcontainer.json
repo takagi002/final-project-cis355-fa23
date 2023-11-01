@@ -11,7 +11,7 @@
 				"ms-dotnettools.csdevkit"
 			]
 		}
-	}
+	},
 
 	// Features to add to the dev container. More info: https://containers.dev/features.
 	// "features": {},
@@ -20,7 +20,7 @@
 	// "customizations": {},
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
-	// "forwardPorts": [5000, 5001, 5432],
+	"forwardPorts": [5432]
 	// "portsAttributes": {
 	//		"5001": {
 	//			"protocol": "https"

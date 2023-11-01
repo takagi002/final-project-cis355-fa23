@@ -20,9 +20,15 @@ public class UserRepository : IUserRepository
         return await _context.Users.ToListAsync();
     }
 
-    public async Task<User?> GetUserByIdAsync(int id)
+    public async Task<User?> GetUserByIdAsync(string id)
     {
-        return await _context.Users.FindAsync(id);
+        // convert string to Guid
+        if (!Guid.TryParse(id, out var guidId))
+        {
+            _logger.LogError("Invalid GUID received. Id: {Id}", id);
+            return null;
+        }
+        return await _context.Users.FindAsync(guidId);
     }
 
     public async Task<User?> CreateUserAsync(User user)

@@ -1,27 +1,29 @@
 {
 	"info": {
-		"_postman_id": "ff0be9af-2fee-492e-9393-d4b9e9e6025d",
-		"name": "UserApi",
+		"_postman_id": "3ecda2e5-0033-41a2-b808-e617c914600f",
+		"name": "User API",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "12453193"
 	},
 	"item": [
 		{
-			"name": "Users",
+			"name": "auth",
 			"item": [
 				{
-					"name": "authenticate",
+					"name": "login",
 					"item": [
 						{
-							"name": "/Users/authenticate",
+							"name": "/auth/login",
 							"event": [
 								{
 									"listen": "test",
 									"script": {
 										"exec": [
-											"var jsonData = pm.response.json();",
-											"",
-											"pm.collectionVariables.set(\"token\", jsonData['token']);"
+											"if (pm.response.code === 200) {",
+											"    var responseBody = pm.response.json();",
+											"    var bearerToken = responseBody.token;",
+											"    pm.collectionVariables.set(\"bearerToken\", bearerToken);",
+											"}"
 										],
 										"type": "text/javascript"
 									}
@@ -37,7 +39,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n  \"password\": \"test\",\n  \"username\": \"test\"\n}",
+									"raw": "{\n    \"username\": \"admin\",\n    \"password\": \"password\"\n}",
 									"options": {
 										"raw": {
 											"headerFamily": "json",
@@ -46,13 +48,13 @@
 									}
 								},
 								"url": {
-									"raw": "{{baseUrl}}/Users/authenticate",
+									"raw": "{{baseUrl}}/auth/login",
 									"host": [
 										"{{baseUrl}}"
 									],
 									"path": [
-										"Users",
-										"authenticate"
+										"auth",
+										"login"
 									]
 								}
 							},
@@ -65,6 +67,11 @@
 											{
 												"key": "Content-Type",
 												"value": "application/json"
+											},
+											{
+												"description": "Added as a part of security scheme: bearer",
+												"key": "Authorization",
+												"value": "Bearer <token>"
 											}
 										],
 										"body": {
@@ -78,13 +85,13 @@
 											}
 										},
 										"url": {
-											"raw": "{{baseUrl}}/Users/authenticate",
+											"raw": "{{baseUrl}}/auth/login",
 											"host": [
 												"{{baseUrl}}"
 											],
 											"path": [
-												"Users",
-												"authenticate"
+												"auth",
+												"login"
 											]
 										}
 									},
@@ -98,60 +105,74 @@
 							]
 						}
 					]
-				},
+				}
+			]
+		},
+		{
+			"name": "users",
+			"item": [
 				{
-					"name": "/Users",
+					"name": "/users",
 					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/Users",
+							"raw": "{{baseUrl}}/users",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
-								"Users"
+								"users"
 							]
 						}
 					},
-					"response": [
-						{
-							"name": "Success",
-							"originalRequest": {
-								"method": "GET",
-								"header": [],
-								"url": {
-									"raw": "{{baseUrl}}/Users",
-									"host": [
-										"{{baseUrl}}"
-									],
-									"path": [
-										"Users"
-									]
+					"response": []
+				},
+				{
+					"name": "/users",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"admin@admin.local\",\n  \"firstName\": \"Adam\",\n  \"lastName\": \"Admin\",\n  \"password\": \"password\",\n  \"username\": \"admin\"\n}",
+							"options": {
+								"raw": {
+									"headerFamily": "json",
+									"language": "json"
 								}
-							},
-							"status": "OK",
-							"code": 200,
-							"_postman_previewlanguage": "text",
-							"header": [],
-							"cookie": [],
-							"body": ""
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users"
+							]
 						}
-					]
+					},
+					"response": []
 				}
 			]
 		}
 	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{bearerToken}}",
+				"type": "string"
+			}
+		]
+	},
 	"event": [
 		{
 			"listen": "prerequest",
@@ -175,10 +196,10 @@
 	"variable": [
 		{
 			"key": "baseUrl",
-			"value": "http://localhost:5038"
+			"value": "http://localhost:5040"
 		},
 		{
-			"key": "token",
+			"key": "bearerToken",
 			"value": ""
 		}
 	]
