@@ -37,6 +37,7 @@ public class MappingProfile : Profile
                         Username = user.Username,
                         Token = context.Items["Token"].ToString() ?? string.Empty
                     });
+        CreateMap<User, UserResponse>();
         // Add more mappings as needed
     }
 }
