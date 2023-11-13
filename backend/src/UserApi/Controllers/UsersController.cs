@@ -20,7 +20,7 @@ public class UsersController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        var users = _userService.GetAllAsync();
+        var users = await _userService.GetAllAsync();
         return Ok(users);
     }
 

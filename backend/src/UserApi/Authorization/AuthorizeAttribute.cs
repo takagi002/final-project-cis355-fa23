@@ -25,7 +25,7 @@ public class AuthorizeAttribute : Attribute, IAuthorizationFilter
         }
 
         // If controller enforcing role-based authorization, check if user has access  
-        if (!string.IsNullOrEmpty(Role) && !user.Role.Equals(Role, StringComparison.InvariantCultureIgnoreCase))
+        if (!string.IsNullOrEmpty(Role) && user.Role != null && !user.Role.Equals(Role, StringComparison.InvariantCultureIgnoreCase))
         {
             context.Result = new ForbidResult();
             return;
