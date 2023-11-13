@@ -38,5 +38,12 @@ public class CreateUserRequest
     [Required]
     [MinLength(8)]
     public string Password { get; set; } = null!;
+
+    /// <summary>
+    /// The role of the user.
+    /// </summary>
+
+    [RoleValidation]
+    public string Role { get; set; } = "Member";
 }
 

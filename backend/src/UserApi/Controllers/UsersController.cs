@@ -24,8 +24,6 @@ public class UsersController : ControllerBase
         return Ok(users);
     }
 
-
-    [AllowAnonymous]
     [HttpPost]
     public async Task<IActionResult> CreateUser(CreateUserRequest newUser)
     {

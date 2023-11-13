@@ -29,5 +29,10 @@ namespace UserApi.Models
         /// The email address of the new user.
         /// </summary>
         public string Email { get; set; } = null!;
+
+        /// <summary>
+        /// The role of the new user.
+        /// </summary>
+        public string Role { get; set; } = null!;
     }
 }
