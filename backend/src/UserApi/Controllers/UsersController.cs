@@ -18,10 +18,17 @@ public class UsersController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAll()
+    public async Task<IActionResult> GetAllUsers()
     {
         var users = await _userService.GetAllAsync();
         return Ok(users);
+    }
+
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetUserById(string id)
+    {
+        var user = await _userService.GetByIdAsync(id);
+        return Ok(user);
     }
 
     [HttpPost]
