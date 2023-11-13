@@ -2,7 +2,13 @@ using Microsoft.OpenApi.Models;
 using UserApi.Authorization;
 using UserApi.Extensions;
 using UserApi.Mappings;
-
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.EntityFrameworkCore;
+using System;
+using UserApi.Entities;
+using UserApi.Repositories;
+using UserApi.Helpers;
+using UserApi.DatabaseConfiguration;
 
 /// <summary>
 /// Entry point for the User API application.
@@ -51,6 +57,13 @@ builder.Logging
     .AddDebug();
 
 var app = builder.Build();
+
+// Add a user to the database during the startup process only when running locally
+if (app.Environment.IsDevelopment())
+{  
+    // Create default admin user if it doesn't exist
+    await UserDbSeeder.SeedUserAsync(app.Services);
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
