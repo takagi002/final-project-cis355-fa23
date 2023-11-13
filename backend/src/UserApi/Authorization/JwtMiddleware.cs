@@ -1,7 +1,6 @@
 namespace UserApi.Authorization;
 
-using UserApi.Services;
-
+using UserApi.Repositories;
 public class JwtMiddleware
 {
     private readonly RequestDelegate _next;
@@ -11,7 +10,7 @@ public class JwtMiddleware
         _next = next;
     }
 
-    public async Task Invoke(HttpContext context, IUserService userService, IJwtUtils jwtUtils)
+    public async Task Invoke(HttpContext context, IUserRepository userRepository, IJwtUtils jwtUtils)
     {
         var token = context.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
         if (token != null)
@@ -20,7 +19,7 @@ public class JwtMiddleware
             if (userId != null)
             {
                 // attach user to context on successful jwt validation
-                context.Items["User"] = await userService.GetByIdAsync(userId);
+                context.Items["User"] = await userRepository.GetUserByIdAsync(userId);
             }
         }
 
