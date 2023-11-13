@@ -1,36 +1,38 @@
-## Updating Models and Context from Database
+# CIS 355 Lab 2 
 
-If you want to synchronize your Entity Framework models and DbContext with the current state of your database, you can leverage the reverse engineering capabilities of Entity Framework Core. This process creates code that represents the current state of your database. This is useful if you have made changes to your database schema and want to update your models and DbContext to reflect those changes.
+## Getting Started
 
-### Prerequisites:
-- Ensure that you have the Entity Framework CLI installed. You can install it using the following command:
-  ```
-  dotnet tool install --global dotnet-ef
-  ```
+### Initial Setup
+Before you run the application, set up the database by following these steps. This ensures everything works smoothly.
 
-### Steps to Reverse Engineer the Database:
+### Prerequisites
+- Open the project in VS Code and connect to the provided Dev Container. 
 
-1. **Navigate to Your Project Directory**: 
-   Open a new terminal windowand navigate to the project directory where you want to update the models and context. For example:
-   ```
-   cd backend/src/UserApi
-   ```
+### Database Configuration
+1. **Restore Dotnet Tools**: 
+   Run `dotnet tools restore` in the terminal to install the Entity Framework (EF) CLI, necessary for applying EF migrations.
 
-2. **Run the Reverse Engineering Command**: 
-   Execute the following Entity Framework CLI command to scaffold (generate) the models and DbContext based on the existing database schema. Make sure to replace `ConnectionStrings:UserDb` with the actual name of your connection string configured in your `appsettings.json` file or the exact connection string itself.
-   ```
-   dotnet ef dbcontext scaffold "Name=ConnectionStrings:UserDb" Npgsql.EntityFrameworkCore.PostgreSQL -o Entities
-   ```
+2. **Apply Database Migrations**: 
+   Use `dotnet ef update` to apply all EF migrations and create the database if it doesn't exist.
 
-   - `"Name=ConnectionStrings:UserDb"`: Specifies the name of the connection string to use for the database connection. This should be configured in your `appsettings.json` file.
-   - `Npgsql.EntityFrameworkCore.PostgreSQL`: Specifies the provider to use, which is Npgsql for PostgreSQL in this case.
-   - `-o Entities`: Specifies the output folder where the generated models and DbContext should be placed. This will be inside the `Entities` folder in your project.
+### Running the Application
+After setting up the database, start the application using `dotnet run` or through your IDE. It will automatically create a default admin account.
 
-3. **Review and Integrate the Generated Code**: 
-   After running the command, review the generated code in the `Entities` folder. Integrate any necessary changes into your project, and resolve any conflicts with existing code.
+See the "Default Admin Account" section for more information on using this account.
 
-4. **Compile and Test Your Project**: 
-   Make sure to compile your project and run any existing tests to ensure that the reverse engineering process has not introduced any issues.
+## Default Admin Account
 
-### Important Note:
-- The reverse engineering process will overwrite existing files in the output directory. Make sure to backup your current models and DbContext if you have made any manual changes that you want to preserve.
+### Overview
+A default admin account is created automatically on the first startup in a development environment. It's designed for immediate access to administrative features.
+
+### Account Details
+- **Username**: `admin`
+- **Email**: `admin@admin.com`
+- **Password**: `password`
+- **Role**: `Admin`
+
+### Usage
+Use this account to sign in and access administrative areas. It's fully enabled for all features and settings, ideal for setup and testing.
+
+### Troubleshooting
+If you can't access the application with the admin account, check if the database has been seeded correctly and look for any startup errors in the application logs.
