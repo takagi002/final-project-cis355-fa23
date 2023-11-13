@@ -59,17 +59,19 @@ public class UserService : IUserService
             ?? throw new Exception("An error occurred when creating user. Try again later.");
 
         // Map User entity to CreateUserResponse model with Automapper
-        var userResponse = _mapper.Map<CreateUserResponse>(createdUser);
-        return userResponse;
+        return _mapper.Map<CreateUserResponse>(createdUser);
     }
 
-    public async Task<IEnumerable<User>> GetAllAsync()
+    public async Task<IEnumerable<UserResponse>> GetAllAsync()
     {
-        return await _userRepository.GetAllUsersAsync();
+        var users = await _userRepository.GetAllUsersAsync();
+    
+        return _mapper.Map<IEnumerable<UserResponse>>(users);
     }
 
-    public async Task<User?> GetByIdAsync(string id)
+    public async Task<UserResponse?> GetByIdAsync(string id)
     {
-        return await _userRepository.GetUserByIdAsync(id);
+        var user = await _userRepository.GetUserByIdAsync(id);
+        return _mapper.Map<UserResponse>(user);
     }
 }
