@@ -49,7 +49,7 @@ public class UserService : IUserService
         //Implement Password requirements
         var message = checkAllowedPassword(userRequest);
         if (message != ""){
-            throw new Exception(message);
+            throw new HttpResponseException(StatusCodes.Status400BadRequest, message);
         }
 
         // Hash and salt the password

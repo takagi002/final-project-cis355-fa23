@@ -20,7 +20,11 @@ public class ErrorHandlerMiddleware
         }
         catch (Exception ex)
         {
-            await HandleExceptionAsync(context, ex, _logger);
+            if (ex.GetType() == typeof(HttpResponseException)) {
+                await HandleCustomExceptionAsync(context, (HttpResponseException)ex, _logger);
+            } else {
+                await HandleExceptionAsync(context, ex, _logger);
+            }
         }
     }
 
@@ -32,6 +36,17 @@ public class ErrorHandlerMiddleware
         context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
 
         var result = JsonSerializer.Serialize(new { error = "An unexpected error has occurred" });
+        return context.Response.WriteAsync(result);
+    }
+
+    private static Task HandleCustomExceptionAsync(HttpContext context, HttpResponseException exception, ILogger<ErrorHandlerMiddleware> logger)
+    {
+        logger.LogError(exception, exception.Message);
+
+        context.Response.ContentType = "application/json";
+        context.Response.StatusCode = exception.StatusCode;
+
+        var result = JsonSerializer.Serialize(new { error = exception.Message });
         return context.Response.WriteAsync(result);
     }
 }
