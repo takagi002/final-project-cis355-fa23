@@ -1,5 +1,6 @@
 using System.Net;
 using System.Text.Json;
+using UserApi.Exceptions;
 
 public class ErrorHandlerMiddleware
 {
@@ -22,6 +23,8 @@ public class ErrorHandlerMiddleware
         {
             if (ex.GetType() == typeof(HttpResponseException)) {
                 await HandleCustomExceptionAsync(context, (HttpResponseException)ex, _logger);
+            } else if (ex.GetType() == typeof(DuplicateEmailException)){
+                await HandleOtherExceptionAsync(context, ex, _logger, "Email or username already in use.");
             } else {
                 await HandleExceptionAsync(context, ex, _logger);
             }
@@ -47,6 +50,17 @@ public class ErrorHandlerMiddleware
         context.Response.StatusCode = exception.StatusCode;
 
         var result = JsonSerializer.Serialize(new { error = exception.Message });
+        return context.Response.WriteAsync(result);
+    }
+
+    private static Task HandleOtherExceptionAsync(HttpContext context, Exception exception, ILogger<ErrorHandlerMiddleware> logger, string message)
+    {
+        logger.LogError(exception, message);
+
+        context.Response.ContentType = "application/json";
+        context.Response.StatusCode = StatusCodes.Status400BadRequest;
+
+        var result = JsonSerializer.Serialize(new { error = message });
         return context.Response.WriteAsync(result);
     }
 }

@@ -1,8 +1,6 @@
-using System.Net.Mail;
 using AutoMapper;
 using UserApi.Authorization;
 using UserApi.Entities;
-using UserApi.Exceptions;
 using UserApi.Helpers;
 using UserApi.Models;
 using UserApi.Repositories;
@@ -47,9 +45,9 @@ public class UserService : IUserService
     public async Task<CreateUserResponse?> CreateUserAsync(CreateUserRequest userRequest)
     {
         //Implement Password requirements
-        var message = checkAllowedPassword(userRequest.Password);
-        if (message != ""){
-            throw new HttpResponseException(StatusCodes.Status400BadRequest, message);
+        var passwordMessage = checkAllowedPassword(userRequest.Password);
+        if (passwordMessage != ""){
+            throw new HttpResponseException(StatusCodes.Status400BadRequest, passwordMessage);
         }
 
         // Hash and salt the password
@@ -84,7 +82,7 @@ public class UserService : IUserService
     }
 
 
-    private string checkAllowedPassword(String password) {
+    private string checkAllowedPassword(string password) {
         var numPattern = ".*[0-9].*";
         var specialCharPattern = "[$%&@#*!]";
         var uppercasePattern = ".*[A-Z].*";
