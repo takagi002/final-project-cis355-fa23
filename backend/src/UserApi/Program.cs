@@ -12,6 +12,10 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddRouting(options => options.LowercaseUrls = true);
 
+Env.Load(".env/google-creds.env");
+var userId = Env.GetString("GOOGLE_CLIENT_ID");
+var secret = Env.GetString("GOOGLE_CLIENT_SECRET");
+
 // Add authentication services
 builder.Services.AddAuthentication(options =>
     {
@@ -19,8 +23,8 @@ builder.Services.AddAuthentication(options =>
     })
     .AddOAuth("Google", options =>
     {
-        options.ClientId = Env.GetString("GOOGLE_CLIENT_ID");
-        options.ClientSecret = Env.GetString("GOOGLE_CLIENT_SECRET");
+        options.ClientId = userId;
+        options.ClientSecret = secret;
         options.CallbackPath = new PathString("/signin-google");
         options.AuthorizationEndpoint = "https://accounts.google.com/o/oauth2/auth";
         options.TokenEndpoint = "https://accounts.google.com/o/oauth2/token";
