@@ -47,7 +47,7 @@ public class UserService : IUserService
     public async Task<CreateUserResponse?> CreateUserAsync(CreateUserRequest userRequest)
     {
         //Implement Password requirements
-        var message = checkAllowedPassword(userRequest);
+        var message = checkAllowedPassword(userRequest.Password);
         if (message != ""){
             throw new HttpResponseException(StatusCodes.Status400BadRequest, message);
         }
@@ -84,14 +84,23 @@ public class UserService : IUserService
     }
 
 
-    private string checkAllowedPassword(CreateUserRequest request) {
+    private string checkAllowedPassword(String password) {
         var numPattern = ".*[0-9].*";
-        var specialCharPattern = "";
+        var specialCharPattern = "[$%&@#*!]";
+        var uppercasePattern = ".*[A-Z].*";
 
-        if (!System.Text.RegularExpressions.Regex.IsMatch(request.Password, numPattern)) {
-            return "Password must contain a number.";
+        var returnMessage = "";
+
+        if (!System.Text.RegularExpressions.Regex.IsMatch(password, numPattern)) {
+            returnMessage += "Password must contain a number. ";
+        } 
+        if (!System.Text.RegularExpressions.Regex.IsMatch(password, specialCharPattern)) {
+            returnMessage += "Password must contain a special character: $%&@#*?! ";
+        }
+        if (!System.Text.RegularExpressions.Regex.IsMatch(password, uppercasePattern)) {
+            returnMessage += "Password must contain an uppercase letter.";
         }
 
-        return "";
+        return returnMessage;
     }
 }
