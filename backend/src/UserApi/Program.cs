@@ -1,25 +1,47 @@
 using Microsoft.OpenApi.Models;
+using Microsoft.AspNetCore.Authentication;
 using UserApi.Authorization;
 using UserApi.Extensions;
 using UserApi.Mappings;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.EntityFrameworkCore;
-using System;
-using UserApi.Entities;
-using UserApi.Repositories;
-using UserApi.Helpers;
 using UserApi.DatabaseConfiguration;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication.OAuth;
+using DotNetEnv;
 
-/// <summary>
-/// Entry point for the User API application.
-/// </summary>
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container
 builder.Services.AddRouting(options => options.LowercaseUrls = true);
+
+// Add authentication services
+builder.Services.AddAuthentication(options =>
+    {
+        options.DefaultChallengeScheme = "Google";
+    })
+    .AddOAuth("Google", options =>
+    {
+        options.ClientId = Env.GetString("GOOGLE_CLIENT_ID");
+        options.ClientSecret = Env.GetString("GOOGLE_CLIENT_SECRET");
+        options.CallbackPath = new PathString("/signin-google");
+        options.AuthorizationEndpoint = "https://accounts.google.com/o/oauth2/auth";
+        options.TokenEndpoint = "https://accounts.google.com/o/oauth2/token";
+        options.UserInformationEndpoint = "https://www.googleapis.com/oauth2/v2/userinfo";
+        options.ClaimActions.MapJsonKey(ClaimTypes.NameIdentifier, "id");
+        options.ClaimActions.MapJsonKey(ClaimTypes.Name, "name");
+        options.ClaimActions.MapJsonKey(ClaimTypes.Email, "email");
+        options.Events = new OAuthEvents
+        {
+            OnCreatingTicket = context =>
+            {
+                // map to database
+                return Task.CompletedTask;
+            }
+        };
+    });
+    
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-// Add swagger gen with bearer token authentication
+
+// Add Swagger with bearer token authentication
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new() { Title = "User API", Version = "v1" });
@@ -45,6 +67,7 @@ builder.Services.AddSwaggerGen(c =>
         }
     });
 });
+
 builder.Services.AddApplicationServices();
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 builder.ConfigureDatabase();
@@ -60,12 +83,12 @@ var app = builder.Build();
 
 // Add a user to the database during the startup process only when running locally
 if (app.Environment.IsDevelopment())
-{  
+{
     // Create default admin user if it doesn't exist
     await UserDbSeeder.SeedUserAsync(app.Services);
 }
 
-// Configure the HTTP request pipeline.
+// Configure the HTTP request pipeline
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -74,6 +97,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseMiddleware<JwtMiddleware>();
 app.UseMiddleware<ErrorHandlerMiddleware>();
+app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 app.Run();

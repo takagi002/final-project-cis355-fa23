@@ -41,3 +41,6 @@ typings
 # .NET compiled files
 bin
 obj
+
+# Environment Variables
+.env
