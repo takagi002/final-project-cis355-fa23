@@ -44,6 +44,12 @@ public class UserService : IUserService
 
     public async Task<CreateUserResponse?> CreateUserAsync(CreateUserRequest userRequest)
     {
+        //Implement Password requirements
+        var passwordMessage = checkAllowedPassword(userRequest.Password);
+        if (passwordMessage != ""){
+            throw new HttpResponseException(StatusCodes.Status400BadRequest, passwordMessage);
+        }
+
         // Hash and salt the password
         (byte[] passwordHash, byte[] passwordSalt) = _passwordHasher.HashPassword(userRequest.Password);
 
@@ -73,5 +79,26 @@ public class UserService : IUserService
     {
         var user = await _userRepository.GetUserByIdAsync(id);
         return _mapper.Map<UserResponse>(user);
+    }
+
+
+    private string checkAllowedPassword(string password) {
+        var numPattern = ".*[0-9].*";
+        var specialCharPattern = "[$%&@#*!]";
+        var uppercasePattern = ".*[A-Z].*";
+
+        var returnMessage = "";
+
+        if (!System.Text.RegularExpressions.Regex.IsMatch(password, numPattern)) {
+            returnMessage += "Password must contain a number. ";
+        } 
+        if (!System.Text.RegularExpressions.Regex.IsMatch(password, specialCharPattern)) {
+            returnMessage += "Password must contain a special character: $%&@#*?! ";
+        }
+        if (!System.Text.RegularExpressions.Regex.IsMatch(password, uppercasePattern)) {
+            returnMessage += "Password must contain an uppercase letter.";
+        }
+
+        return returnMessage;
     }
 }
